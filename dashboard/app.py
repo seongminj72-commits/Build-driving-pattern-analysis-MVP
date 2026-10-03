@@ -69,11 +69,11 @@ st.caption("KMeans 군집 번호와 이 설명은 통계적 유사성의 요약�
 with st.expander("군집별 Feature 평균 및 k 탐색 점수"):
     st.pyplot(plot_cluster_feature_means(summary), clear_figure=True)
     if scores: st.pyplot(plot_silhouette_scores(scores), clear_figure=True)
-    st.dataframe(summary.round(3), use_container_width=True)
+    st.dataframe(summary.round(3), width="stretch")
 
 st.subheader("GPS 주행 위치")
 gps = selected.dropna(subset=["latitude", "longitude"])
 if not gps.empty:
-    st.map(gps[["latitude", "longitude"]].rename(columns={"latitude": "lat", "longitude": "lon"}), use_container_width=True)
+    st.map(gps[["latitude", "longitude"]].rename(columns={"latitude": "lat", "longitude": "lon"}), width="stretch")
 else:
     st.info("선택된 주행에는 표시할 GPS 위치 정보가 없습니다.")
