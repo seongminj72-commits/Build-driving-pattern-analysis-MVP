@@ -58,6 +58,24 @@ streamlit run dashboard/app.py
 
 `run_pipeline.py`는 프로젝트 루트 기준 경로를 사용하고 필요한 출력 폴더를 자동으로 만듭니다. 원본 CSV를 직접 가지고 있다면 `data/raw/driving_data.csv`에 두고 파이프라인을 실행하면 됩니다.
 
+## 샘플 분석 결과
+
+포함된 가상 데이터는 6명의 운전자와 24개 주행 기록으로 구성됩니다. 실행 예시에서는 silhouette score 비교 결과 `k=2`가 선택됐으며, 점수는 `0.4225`였습니다. 이 값은 해당 샘플 데이터에서의 군집 분리 정도를 나타내며, 실제 운전자나 다른 데이터에 대한 성능을 보장하지 않습니다.
+
+### 주행 시계열
+
+![주행 속도 변화](results/figures/speed_over_time.png)
+
+![가속도와 급가속·급감속 이벤트](results/figures/acceleration_over_time.png)
+
+### 운전자 및 군집 비교
+
+![운전자별 평균 속도](results/figures/average_speed_by_driver.png)
+
+![군집별 Feature 평균 비교](results/figures/cluster_feature_means.png)
+
+![후보 k별 silhouette score](results/figures/silhouette_scores.png)
+
 ## 분석 흐름
 
 ```text
