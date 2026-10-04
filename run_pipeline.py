@@ -1,5 +1,6 @@
 """전체 데이터 분석 파이프라인 실행 진입점."""
 from pathlib import Path
+import pandas as pd
 from src.preprocess import load_and_preprocess_data
 from src.event_detector import detect_driving_events
 from src.feature_engineering import build_trip_features
@@ -30,6 +31,10 @@ def main() -> None:
                       "hard_braking_count", "overspeed_count", "cluster"]
     clustered.to_csv(results_dir / "cluster_result.csv", index=False)
     summary.to_csv(results_dir / "cluster_summary.csv", index=False)
+    pd_scores = pd.DataFrame(
+        [{"k": k, "silhouette_score": score} for k, score in scores.items()]
+    )
+    pd_scores.to_csv(results_dir / "silhouette_scores.csv", index=False)
     events.to_csv(processed_dir / "driving_events.csv", index=False)
     print("[5/7] 결과 저장")
     print(f"군집 결과: {results_dir / 'cluster_result.csv'} (포함 컬럼: {', '.join(output_columns)})")

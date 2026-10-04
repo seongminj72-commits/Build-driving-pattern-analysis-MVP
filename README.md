@@ -56,7 +56,7 @@ python run_pipeline.py
 streamlit run dashboard/app.py
 ```
 
-`run_pipeline.py`는 프로젝트 루트 기준 경로를 사용하고 필요한 출력 폴더를 자동으로 만듭니다. 원본 CSV를 직접 가지고 있다면 `data/raw/driving_data.csv`에 두고 파이프라인을 실행하면 됩니다.
+`run_pipeline.py`는 프로젝트 루트 기준 경로를 사용하고 필요한 출력 폴더를 자동으로 만듭니다. 대시보드는 파이프라인이 저장한 전처리 이벤트와 군집 결과를 읽기만 하므로, 페이지를 조작할 때마다 KMeans를 다시 학습하거나 모델 파일을 덮어쓰지 않습니다. 원본 CSV를 직접 바꾸거나 새 분석 결과를 만들 때는 `python run_pipeline.py`를 다시 실행한 뒤 대시보드 페이지를 새로고침하세요. 파이프라인은 후보 k별 점수를 `results/silhouette_scores.csv`에도 저장합니다.
 
 ## 샘플 분석 결과
 

@@ -6,25 +6,27 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from src.preprocess import load_and_preprocess_data
-from src.event_detector import detect_driving_events
-from src.feature_engineering import build_trip_features
-from src.clustering import fit_best_kmeans, describe_cluster
+from src.clustering import describe_cluster
 from src.visualization import plot_time_series, plot_acceleration_events, plot_cluster_feature_means, plot_silhouette_scores
 
 st.set_page_config(page_title="Intelligent Driving Pattern Analysis", page_icon="🚗", layout="wide")
 st.title("🚗 Intelligent Driving Pattern Analysis")
 st.caption("차량 주행 데이터의 특성을 살펴보고 유사한 주행 패턴을 군집으로 비교합니다.")
-raw_path = ROOT / "data/raw/driving_data.csv"
-if not raw_path.exists():
-    st.info("데이터가 없습니다. 프로젝트 루트에서 `python generate_sample_data.py`와 `python run_pipeline.py`를 실행하세요.")
+events_path = ROOT / "data/processed/driving_events.csv"
+cluster_path = ROOT / "results/cluster_result.csv"
+summary_path = ROOT / "results/cluster_summary.csv"
+scores_path = ROOT / "results/silhouette_scores.csv"
+required_paths = [events_path, cluster_path, summary_path]
+if not all(path.exists() for path in required_paths):
+    st.info("분석 결과가 없습니다. 프로젝트 루트에서 `python generate_sample_data.py`와 `python run_pipeline.py`를 실행하세요.")
     st.stop()
 try:
-    clean = load_and_preprocess_data(raw_path, verbose=False)
-    events = detect_driving_events(clean)
-    features = build_trip_features(events)
-    clustered, summary, scores, model, scaler = fit_best_kmeans(features, ROOT / "models")
-except (ValueError, FileNotFoundError, KeyError) as exc:
+    events = pd.read_csv(events_path, parse_dates=["timestamp"])
+    clustered = pd.read_csv(cluster_path)
+    summary = pd.read_csv(summary_path)
+    scores_df = pd.read_csv(scores_path) if scores_path.exists() else pd.DataFrame(columns=["k", "silhouette_score"])
+    scores = dict(zip(scores_df["k"].astype(int), scores_df["silhouette_score"].astype(float)))
+except (OSError, ValueError, KeyError, pd.errors.ParserError) as exc:
     st.error(f"데이터 분석을 준비하지 못했습니다: {exc}")
     st.stop()
 
