@@ -22,6 +22,8 @@ driving-pattern-analysis/
 ├── notebooks/analysis.ipynb              # 선택적 탐색 노트북 위치
 ├── results/figures/                      # 분석 그래프
 ├── results/cluster_result.csv            # 주행별 Feature 및 군집
+├── results/cluster_summary.csv           # 군집별 Feature 평균
+├── results/silhouette_scores.csv         # 후보 k별 silhouette score
 ├── generate_sample_data.py
 ├── run_pipeline.py
 └── requirements.txt
@@ -83,7 +85,7 @@ Vehicle Data → Preprocessing → Driving Event Detection → Feature Engineeri
 → StandardScaler → KMeans → Cluster Analysis → Streamlit Dashboard
 ```
 
-전처리 함수는 원본 DataFrame을 직접 바꾸지 않습니다. 중복 제거, 필수 값 점검, 시간 및 숫자형 변환, 물리 범위를 벗어난 속도/RPM 보정, 주행별 시간 정렬을 수행합니다. 출력으로 `data/processed/driving_events.csv`, `data/processed/driving_features.csv`, `results/cluster_result.csv`, 군집 요약, 모델과 그래프를 생성합니다.
+전처리 함수는 원본 DataFrame을 직접 바꾸지 않습니다. 중복 제거, 필수 값 점검, 시간 및 숫자형 변환, 물리 범위를 벗어난 속도/RPM 보정, 주행별 시간 정렬을 수행합니다. 파이프라인은 `data/processed/driving_events.csv`, `data/processed/driving_features.csv`, `results/cluster_result.csv`, `results/cluster_summary.csv`, `results/silhouette_scores.csv`, 모델과 그래프를 생성합니다.
 
 ## KMeans와 결과 해석
 
