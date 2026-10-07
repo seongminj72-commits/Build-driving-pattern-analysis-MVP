@@ -60,6 +60,17 @@ streamlit run dashboard/app.py
 
 `run_pipeline.py`는 프로젝트 루트 기준 경로를 사용하고 필요한 출력 폴더를 자동으로 만듭니다. 대시보드는 파이프라인이 저장한 전처리 이벤트와 군집 결과를 읽기만 하므로, 페이지를 조작할 때마다 KMeans를 다시 학습하거나 모델 파일을 덮어쓰지 않습니다. 원본 CSV를 직접 바꾸거나 새 분석 결과를 만들 때는 `python run_pipeline.py`를 다시 실행한 뒤 대시보드 페이지를 새로고침하세요. 파이프라인은 후보 k별 점수를 `results/silhouette_scores.csv`에도 저장합니다.
 
+## 웹에 대시보드 배포하기
+
+[Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)를 이용하면 GitHub 저장소의 앱을 웹에서 실행할 수 있습니다.
+
+1. Streamlit Community Cloud에 로그인하고 GitHub 계정을 연결합니다.
+2. **Create app**에서 이 저장소 `seongminj72-commits/Build-driving-pattern-analysis-MVP`를 선택합니다.
+3. 브랜치는 `main`, 앱 파일 경로는 `dashboard/app.py`로 지정합니다.
+4. 필요하면 고급 설정에서 Python 3.12를 선택하고 배포합니다.
+
+저장소 루트에 `requirements.txt`와 대시보드가 읽는 샘플 데이터 및 결과 파일을 함께 커밋해 두었습니다. 원본 데이터나 코드가 바뀌면 파이프라인을 실행하고 변경 파일을 GitHub에 push하면 배포 앱이 갱신됩니다. 자세한 계정 연결과 앱 설정은 [공식 배포 문서](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)를 참고하세요.
+
 ## 샘플 분석 결과
 
 포함된 가상 데이터는 6명의 운전자와 24개 주행 기록으로 구성됩니다. 실행 예시에서는 silhouette score 비교 결과 `k=2`가 선택됐으며, 점수는 `0.4225`였습니다. 이 값은 해당 샘플 데이터에서의 군집 분리 정도를 나타내며, 실제 운전자나 다른 데이터에 대한 성능을 보장하지 않습니다.
