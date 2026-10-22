@@ -1,155 +1,101 @@
 # 자동차 AX 기반 지능형 운전 패턴 분석 시스템
 
-차량 주행 데이터에서 속도·가속도·RPM 특성을 분석하고, 급가속·급감속·과속 이벤트를 표시한 뒤 KMeans로 유사한 주행 패턴을 묶어 Streamlit 대시보드에서 확인하는 교육용 MVP입니다.
+용인시 통학생과 주민을 위한 주행 CSV 분석 MVP. 속도 변화, 급가속·급감속 이벤트,
+GPS 경로와 사고지점 근접성을 한 화면에서 확인한다. pandas·Streamlit 기반이다.
+수지·죽전 일대 연결 기능을 시연할 수 있지만 **실제 용인시 사고 원본은 아직 확보하지 않았다.**
+포함된 주행과 사고지점 예제는 합성 자료다.
 
-## 프로젝트 목적
+## 실행
 
-- pandas 기반 차량 데이터 전처리
-- 이벤트 탐지와 주행 단위 Feature Engineering
-- StandardScaler와 KMeans를 이용한 비지도 패턴 탐색
-- silhouette score를 이용한 후보 군집 수 비교
-- matplotlib 시각화와 Streamlit 대시보드 구현
-
-## 프로젝트 구조
-
-```text
-driving-pattern-analysis/
-├── data/raw/driving_data.csv            # 생성된 입력 주행 데이터
-├── data/processed/                      # 주행 이벤트 및 Feature
-├── src/                                  # 전처리, 탐지, 분석, 시각화 모듈
-├── models/                               # KMeans와 StandardScaler 저장 파일
-├── dashboard/app.py                      # Streamlit 앱
-├── notebooks/analysis.ipynb              # 선택적 탐색 노트북 위치
-├── results/figures/                      # 분석 그래프
-├── results/cluster_result.csv            # 주행별 Feature 및 군집
-├── results/cluster_summary.csv           # 군집별 Feature 평균
-├── results/silhouette_scores.csv         # 후보 k별 silhouette score
-├── generate_sample_data.py
-├── run_pipeline.py
-└── requirements.txt
-```
-
-## 데이터 설명
-
-| 컬럼 | 설명 |
-|---|---|
-| `driver_id` | 운전자 식별자 (예: D001) |
-| `trip_id` | 주행 식별자 (예: T001) |
-| `timestamp` | 측정 시각 |
-| `speed` | 속도 (km/h) |
-| `acceleration` | 종방향 가속도 (m/s²) |
-| `brake` | 브레이크 입력 (0/1) |
-| `rpm` | 엔진 회전수 |
-| `steering_angle` | 조향각 |
-| `latitude`, `longitude` | GPS 위도와 경도 |
-
-기본 입력 파일은 `data/raw/driving_data.csv`입니다. 생성기는 고정 seed를 사용해 6명의 운전자와 운전자별 4개 주행 기록을 만듭니다. 생성 과정의 주행 특성 설정은 데이터 변화에만 쓰며 KMeans 입력 Label로 쓰지 않습니다.
-
-## 설치 및 실행
-
-Python 3.10 이상을 권장합니다.
+Python 3.10 이상:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate       # Windows PowerShell: .venv\Scripts\Activate.ps1
+source .venv/bin/activate
 pip install -r requirements.txt
-python generate_sample_data.py
-python run_pipeline.py
 streamlit run dashboard/app.py
 ```
 
-`run_pipeline.py`는 프로젝트 루트 기준 경로를 사용하고 필요한 출력 폴더를 자동으로 만듭니다. 대시보드는 파이프라인이 저장한 전처리 이벤트와 군집 결과를 읽기만 하므로, 페이지를 조작할 때마다 KMeans를 다시 학습하거나 모델 파일을 덮어쓰지 않습니다. 원본 CSV를 직접 바꾸거나 새 분석 결과를 만들 때는 `python run_pipeline.py`를 다시 실행한 뒤 대시보드 페이지를 새로고침하세요. 파이프라인은 후보 k별 점수를 `results/silhouette_scores.csv`에도 저장합니다.
+CSV를 업로드하거나 합성 주행 예제를 선택한다. 기본 수지·죽전 예제에서 가상 사고지점을 켜면
+근접 이벤트 2회를 확인할 수 있다. 이 경로는 실제 도로를 따른 기록이 아닌 임의 좌표다. 사고지점 CSV는 선택이며,
+지역 데이터 없이도 주행 분석은 가능하다. UTF-8(BOM 포함), CP949 CSV를 지원한다.
+업로드 자료는 앱 메모리에서 분석하고 파일이나 모델에 저장하지 않는다.
+지도에는 외부 배경지도 서비스가 필요할 수 있다. 분석 계산은 외부 API 없이 수행한다.
 
-## 웹에 대시보드 배포하기
+## 입력
 
-[Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)를 이용하면 GitHub 저장소의 앱을 웹에서 실행할 수 있습니다.
-
-1. Streamlit Community Cloud에 로그인하고 GitHub 계정을 연결합니다.
-2. **Create app**에서 이 저장소 `seongminj72-commits/Build-driving-pattern-analysis-MVP`를 선택합니다.
-3. 브랜치는 `main`, 앱 파일 경로는 `dashboard/app.py`로 지정합니다.
-4. 필요하면 고급 설정에서 Python 3.12를 선택하고 배포합니다.
-
-저장소 루트에 `requirements.txt`와 대시보드가 읽는 샘플 데이터 및 결과 파일을 함께 커밋해 두었습니다. 원본 데이터나 코드가 바뀌면 파이프라인을 실행하고 변경 파일을 GitHub에 push하면 배포 앱이 갱신됩니다. 자세한 계정 연결과 앱 설정은 [공식 배포 문서](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)를 참고하세요.
-
-## 샘플 분석 결과
-
-포함된 가상 데이터는 6명의 운전자와 24개 주행 기록으로 구성됩니다. 실행 예시에서는 silhouette score 비교 결과 `k=2`가 선택됐으며, 점수는 `0.4225`였습니다. 이 값은 해당 샘플 데이터에서의 군집 분리 정도를 나타내며, 실제 운전자나 다른 데이터에 대한 성능을 보장하지 않습니다.
-
-### 주행 시계열
-
-![주행 속도 변화](results/figures/speed_over_time.png)
-
-![가속도와 급가속·급감속 이벤트](results/figures/acceleration_over_time.png)
-
-### 운전자 및 군집 비교
-
-![운전자별 평균 속도](results/figures/average_speed_by_driver.png)
-
-![군집별 Feature 평균 비교](results/figures/cluster_feature_means.png)
-
-![후보 k별 silhouette score](results/figures/silhouette_scores.png)
-
-## 분석 흐름
-
-```text
-Vehicle Data → Preprocessing → Driving Event Detection → Feature Engineering
-→ StandardScaler → KMeans → Cluster Analysis → Streamlit Dashboard
-```
-
-전처리 함수는 원본 DataFrame을 직접 바꾸지 않습니다. 중복 제거, 필수 값 점검, 시간 및 숫자형 변환, 물리 범위를 벗어난 속도/RPM 보정, 주행별 시간 정렬을 수행합니다. 파이프라인은 `data/processed/driving_events.csv`, `data/processed/driving_features.csv`, `results/cluster_result.csv`, `results/cluster_summary.csv`, `results/silhouette_scores.csv`, 모델과 그래프를 생성합니다.
-
-## KMeans와 결과 해석
-
-정답 Label이 없는 환경에서 주행 Feature가 비슷한 기록끼리 탐색하기 위해 비지도학습 KMeans를 사용합니다. 운전자/주행 ID는 모델 입력에서 제외하고, 선택한 수치 Feature에 StandardScaler를 적용합니다. 2부터 최대 6까지의 후보 k를 silhouette score로 비교해 점수가 가장 높은 모델을 선택합니다. 유효 표본이 부족하면 단일 군집 결과를 반환해 파이프라인이 계속 동작합니다.
-
-KMeans의 cluster 번호는 임의의 식별자이며 안전/위험 순위가 아닙니다. 대시보드는 속도 변동 및 이벤트 비율의 군집 평균을 비교해 상대적인 주행 특성을 설명합니다. 개인의 운전 안전성을 확정하거나 평가하지 않습니다.
-
-급가속(2.5 m/s²), 급감속(-3.0 m/s²), 과속(100 km/h) 임계값은 이 교육용 프로젝트에서 사용하는 **예시 분석 기준**입니다. 실제 교통법규, 도로별 제한속도 또는 안전성 판단 기준이 아닙니다. 분석 결과를 실제 운전 판단에 사용하지 마세요.
-
-## 14일 개발 일정
-
-| 날짜 | 작업 |
+| 주행 필드 | 의미 |
 |---|---|
-| Day 1 | 목표 정의, 저장소와 폴더 구조 생성 |
-| Day 2 | 가상 차량 주행 데이터 생성 |
-| Day 3 | 데이터 탐색 및 EDA |
-| Day 4 | 데이터 전처리 구현 |
-| Day 5 | 속도·가속도 기본 분석 |
-| Day 6 | 급가속·급감속·과속 탐지 |
-| Day 7 | Feature Engineering |
-| Day 8 | 데이터 시각화 |
-| Day 9 | StandardScaler와 KMeans 구현 |
-| Day 10 | silhouette score 및 군집 분석 |
-| Day 11 | Streamlit 기본 Dashboard |
-| Day 12 | 대시보드와 분석 결과 연결 |
-| Day 13 | 전체 파이프라인 실행 및 오류 수정 |
-| Day 14 | 문서와 결과 정리, 포트폴리오 준비 |
+| timestamp | 필수 측정 시각. 시간대 없는 값은 UTC로 해석하므로 현지 기록에는 +09:00 명시 권장 |
+| speed_kmh | 필수 속도 km/h. 기존 speed 컬럼도 허용; 둘 다 있으면 speed_kmh 우선 |
+| trip_id | 선택, 없으면 파일 전체에 uploaded-trip 부여 |
+| driver_id | 선택, 운전자 식별자가 있으면 주행 키에 함께 사용 |
+| latitude / longitude | 선택 WGS84 십진도 |
 
-## 향후 개선 (Future Work)
+RPM 등 원본 추가 필드는 분석 DataFrame에 보존한다. 원본 acceleration은 보존하되
+새 이벤트 계산에는 속도 차분으로 계산한 acceleration_mps2를 사용한다.
+주행 데이터 필수 컬럼 오류는 화면에서 안내한다.
 
-- 실제 OBD-II 데이터 연동
-- CAN 데이터 활용
-- GPS 기반 도로 분석 및 제한속도 데이터 연동
-- 운전자별 장기간 패턴 분석
-- 설명 가능한 운전 피드백 모델
-- 이상 탐지 모델, 지도 기반 시각화, 실시간 데이터 처리
+사고 CSV 내부 스키마:
+`hotspot_id, location_name, latitude, longitude, accident_type, accident_count,
+reference_year, source_name, source_url, is_demo`.
+좌표 외 누락 필드는 결측으로 유지한다. 실제 공개 컬럼 매핑과 확보 현황은
+[데이터 출처 기록](docs/DATA_SOURCES.md)을 참고한다. 앱은 사고 CSV를 자동으로 용인시로
+필터링하지 않으므로 사용자가 확보·선별한 범위가 분석 범위다.
 
-향후 차량 데이터 연결 구상:
+## 계산 및 제외 정책
 
-```text
-Vehicle
-   ↓
-OBD-II / CAN
-   ↓
-Real-time Data Collection
-   ↓
-Driving Feature Extraction
-   ↓
-AI Driving Pattern Analysis
-   ↓
-Driver Feedback
+- 식별자 결측, 해석 불가 시각, 숫자 변환 실패·결측·무한대·음수 속도 행은 제외한다.
+- 운전자/주행별 시각순 안정 정렬. 동일 주행·시각 중복은 원본에서 처음 등장한 행만 유지한다.
+- 가속도 = `(현재속도-이전속도)/3.6/시간차(초)`. 주행 경계를 넘지 않는다.
+- 0 이하 시간차, 설정 최대 간격(기본 10초) 초과, 제거된 오류 측정 구간에서는 차분하지 않는다.
+  유효 시각을 가진 오류 행은 구간 경계를 남긴다. 시각 자체가 손상된 행은 위치를 복원할 수 없다.
+- 유효 주행 시간은 유효 인접 구간의 초 합계다. 평균은 양 끝 속도의 산술평균을 구간 시간으로
+  가중한 사다리꼴 평균이다. 유효 구간이 없으면 평균은 계산 불가다. 최고 속도는 유효 행 최댓값이다.
+- 급가속 ≥ 2.5, 급감속 ≤ -3.0 m/s². 기존 저장소의 **프로젝트 시연용 기준**이며 설정에서 변경한다.
+- 같은 유형의 연속 초과 행을 하나로 묶고 주행 경계·시간 공백·정상 구간에서 분리한다.
+  시작은 첫 초과 구간의 이전 시각, 종료는 마지막 초과 시각이며 지속시간은 구간 시간 합계다.
+- 대표 위치는 이벤트에서 절대 가속도 최댓값을 처음 기록한 행의 좌표다.
+  그 행의 좌표가 없으면 대표 위치는 결측으로 유지한다.
+- 좌표 누락·숫자 오류·위도 ±90/경도 ±180 밖의 값은 위치 분석에서만 제외한다.
+  두 좌표 중 하나라도 무효면 좌표 쌍을 제외한다. GPS 누락·측정 공백·주행 경계를 경로로 연결하지 않는다.
+- 입력/제외/중복/GPS 오류/긴 공백 수를 화면에 표시한다. 전체 파일 점검 후 주행을 선택한다.
+- 제한속도가 없으므로 새 앱은 과속을 판정하지 않는다. 급감속·근접성만으로 과실이나 위험 운전을 단정하지 않는다.
+
+## 구조 및 기존 기능
+
+- `dashboard/app.py`: 새 업로드 분석·지도·사고지점·피드백 화면
+- `src/trip_analysis.py`: 입력 검증, 계산, 이벤트 병합, 거리 계산
+- `tests/`: 계산 및 Streamlit 회귀 테스트
+- `data/regional/demo_hotspots.csv`: 선택적 가상 시연 지점
+- `dashboard/legacy_app.py`: 기존 군집 대시보드 보관
+- 기존 `run_pipeline.py`, 전처리·군집·시각화 모듈과 결과 파일은 보존
+
+기존 군집 분석 실행:
+
+```bash
+python generate_sample_data.py
+python run_pipeline.py
+streamlit run dashboard/legacy_app.py
 ```
 
-## 파일 크기 관리
+기존 군집 화면은 저장된 결과를 읽는다. 기존 과속 표시(100km/h)는 교육용 예시이며 실제 제한속도 판정이 아니다.
+기존 행별 이벤트 집계·단순 평균은 새 앱의 병합 이벤트·시간 가중 평균과 정의가 다르다.
+KMeans 군집 번호는 안전 순위가 아니다.
 
-샘플 CSV와 joblib 모델은 현재 교육용 소규모 파일입니다. 실제 데이터를 사용해 파일이 커지면 `.gitignore`에 `data/raw/*.csv`, `models/*.pkl`을 추가해 저장소에서 제외할 수 있습니다. 개인 식별 정보나 실제 차량 원시 데이터를 공개 저장소에 올리지 마세요.
+## 검증
+
+```bash
+python -m unittest discover -s tests -v
+python -m compileall -q dashboard src
+```
+
+시간 가중 평균, 연속 이벤트 병합, 주행·공백 경계, 오류 속도, 중복 시각, GPS 분절,
+공공 컬럼 매핑, 거리 계산과 Streamlit 기본/시연 화면을 확인한다.
+실제 공공 사고지점, 도로 제한속도, 도로망 기반 매칭, 실시간 주의 안내는 후속 과제다.
+본 앱은 업로드한 과거 기록의 분석 도구다. 커밋·푸시·배포는 별도로 수행한다.
+
+## 웹 배포
+
+Streamlit Community Cloud의 저장소·브랜치·실행 파일 설정과 점검 절차는
+[배포 안내](docs/DEPLOYMENT.md)에 정리했다.

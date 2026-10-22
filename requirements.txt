@@ -1,6 +1,7 @@
-pandas
+pandas>=2.0
 numpy
 matplotlib
 scikit-learn
-streamlit
+streamlit>=1.49
 joblib
+pydeck>=0.9
