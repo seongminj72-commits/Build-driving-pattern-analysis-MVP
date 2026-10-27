@@ -7,6 +7,18 @@ GPS 경로와 사고지점 근접성을 한 화면에서 확인한다. pandas·S
 
 ## 실행
 
+### 계산 계약 검증용 합성 fixture
+
+기존 `python generate_sample_data.py` 동작은 유지됩니다. 아래 신규 옵션은 실제 주행 데이터가 아닌, 시간-속도 차분과 이벤트 병합 규칙을 검증하는 결정적 합성 CSV 3개를 `tests/fixtures/trips/`에 생성합니다.
+
+```bash
+python generate_sample_data.py --validation-fixtures
+python -m unittest discover -s tests -v
+```
+
+fixture 시나리오는 일정 속도, 일정 가속도(+3 m/s²), 정지·11초 측정 공백입니다. 급가속 2.5 m/s², 급감속 -3.0 m/s², 최대 측정 간격 10초는 이 프로젝트의 시연 기준이며 공인 안전 기준이 아닙니다. 이 데이터는 실제 주행·실차 검증을 의미하지 않습니다.
+
+
 Python 3.10 이상:
 
 ```bash

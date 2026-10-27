@@ -5,6 +5,34 @@ import pandas as pd
 
 OUTPUT_PATH = Path(__file__).parent / "data" / "raw" / "driving_data.csv"
 SEED = 42
+VALIDATION_COLUMNS = ['driver_id', 'trip_id', 'timestamp', 'speed_kmh']
+
+
+def _fixture_frame(trip_id: str, seconds: list[int], speeds: list[float]) -> pd.DataFrame:
+    return pd.DataFrame({
+        'driver_id': ['SYNTH001'] * len(seconds),
+        'trip_id': [trip_id] * len(seconds),
+        'timestamp': [f'2026-01-01T00:00:{second:02d}Z' for second in seconds],
+        'speed_kmh': speeds,
+    }, columns=VALIDATION_COLUMNS)
+
+
+def generate_validation_fixtures(output_dir: str | Path = Path(__file__).parent / 'tests' / 'fixtures' / 'trips') -> dict[str, pd.DataFrame]:
+    """Write deterministic time/speed fixtures for analysis tests.
+
+    These fixtures validate demonstration calculations; they are not real
+    vehicle or road measurements.
+    """
+    fixtures = {
+        'constant_speed': _fixture_frame('constant_speed', [0, 1, 3, 6], [36.0, 36.0, 36.0, 36.0]),
+        'constant_acceleration': _fixture_frame('constant_acceleration', [0, 1, 3, 6], [0.0, 10.8, 32.4, 64.8]),
+        'stop_time_gap': _fixture_frame('stop_time_gap', [0, 1, 2, 4, 15, 16, 18], [28.8, 14.4, 0.0, 0.0, 118.8, 118.8, 118.8]),
+    }
+    directory = Path(output_dir)
+    directory.mkdir(parents=True, exist_ok=True)
+    for name, frame in fixtures.items():
+        frame.to_csv(directory / f'{name}.csv', index=False, lineterminator='\n')
+    return fixtures
 
 
 def generate_sample_data(output_path: str | Path = OUTPUT_PATH, seed: int = SEED) -> pd.DataFrame:
@@ -43,4 +71,13 @@ def generate_sample_data(output_path: str | Path = OUTPUT_PATH, seed: int = SEED
 
 
 if __name__ == "__main__":
-    generate_sample_data()
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--validation-fixtures', action='store_true',
+                        help='분석 계약 검증용 결정적 합성 CSV 3개를 생성합니다.')
+    args = parser.parse_args()
+    if args.validation_fixtures:
+        generate_validation_fixtures()
+    else:
+        generate_sample_data()

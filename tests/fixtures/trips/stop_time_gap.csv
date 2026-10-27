@@ -1,0 +1,8 @@
+driver_id,trip_id,timestamp,speed_kmh
+SYNTH001,stop_time_gap,2026-01-01T00:00:00Z,28.8
+SYNTH001,stop_time_gap,2026-01-01T00:00:01Z,14.4
+SYNTH001,stop_time_gap,2026-01-01T00:00:02Z,0.0
+SYNTH001,stop_time_gap,2026-01-01T00:00:04Z,0.0
+SYNTH001,stop_time_gap,2026-01-01T00:00:15Z,118.8
+SYNTH001,stop_time_gap,2026-01-01T00:00:16Z,118.8
+SYNTH001,stop_time_gap,2026-01-01T00:00:18Z,118.8

@@ -1,0 +1,5 @@
+driver_id,trip_id,timestamp,speed_kmh
+SYNTH001,constant_speed,2026-01-01T00:00:00Z,36.0
+SYNTH001,constant_speed,2026-01-01T00:00:01Z,36.0
+SYNTH001,constant_speed,2026-01-01T00:00:03Z,36.0
+SYNTH001,constant_speed,2026-01-01T00:00:06Z,36.0
