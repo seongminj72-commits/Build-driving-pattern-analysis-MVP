@@ -1,5 +1,7 @@
 # 자동차 AX 기반 지능형 운전 패턴 분석 시스템
 
+[![CI](https://github.com/seongminj72-commits/Build-driving-pattern-analysis-MVP/actions/workflows/ci.yml/badge.svg)](https://github.com/seongminj72-commits/Build-driving-pattern-analysis-MVP/actions/workflows/ci.yml)
+
 주민을 위한 주행 CSV 분석 MVP. 속도 변화, 급가속·급감속 이벤트,
 GPS 경로와 사고지점 근접성을 한 화면에서 확인한다. pandas·Streamlit 기반이다.
 수지·죽전 일대 연결 기능을 시연할 수 있지만 **실제 용인시 사고 원본은 아직 확보하지 않았다.**
@@ -104,6 +106,7 @@ python -m compileall -q dashboard src
 
 시간 가중 평균, 연속 이벤트 병합, 주행·공백 경계, 오류 속도, 중복 시각, GPS 분절,
 공공 컬럼 매핑, 거리 계산과 Streamlit 기본/시연 화면을 확인한다.
+GitHub Actions는 `main` 푸시와 pull request마다 Python 3.10·3.12 환경에서 같은 검증을 실행한다.
 실제 공공 사고지점, 도로 제한속도, 도로망 기반 매칭, 실시간 주의 안내는 후속 과제다.
 본 앱은 업로드한 과거 기록의 분석 도구다. 커밋·푸시·배포는 별도로 수행한다.
 
